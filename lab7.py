@@ -25,10 +25,10 @@ class Ball(Turtle):
 			self.dy = -self.dy
 		
 
-A = Ball(20, 20, 10, 'black', 0.09, 0.015)
-B = Ball(15, 40, 12, 'black', 0.01, 0.08)
+A = Ball(20, 20, 10, 'green', 0.09, 0.015)
+B = Ball(15, 40, 12, 'yellow', 0.01, 0.08)
 C = Ball(25, 50, 17, 'black', 0.059, 0.08)
-D = Ball(32, 32, 20, 'black', 0.089, 0.045)
+D = Ball(32, 32, 20, 'blue', 0.089, 0.045)
 
 Balls = []
 Balls.append(A)
@@ -48,7 +48,7 @@ def check_collosion():
 				DisAB = math.sqrt(math.pow((xi-xj), 2) + math.pow((yi-yj), 2))
 
 				# print(DisAB)
-				if(((i.radius/10 + j.radius/10) >= DisAB)):
+				if(((i.radius + j.radius) >= DisAB)):
 					R = random.randint(0, 255)
 					G = random.randint(0, 255)
 					B = random.randint(0, 255)
