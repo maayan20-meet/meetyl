@@ -7,15 +7,8 @@ class Ball(Turtle):
 	def __init__(self, x, y, dx, dy, r, color):
 		Turtle.__init__(self)
 		self.penup()
-		self.goto(x, y)
-
-		self.dx = dx
-		self.dy = dy
-		self.r = r
-
 		self.shape("circle")
-		self.shapesize(r/10)
-		self.color(color)
+		self.realINIT(x, y, dx, dy, r, color)
 
 	def move(self, screen_width, screen_height):
 		current_x = self.xcor()
@@ -33,6 +26,19 @@ class Ball(Turtle):
 
 		if(sides['up'] > screen_height or sides['down'] < (-screen_height)):
 			self.dy *= -1
+
+	def kill(self, x, y, dx, dy, r, color):
+		self.realINIT(x, y, dx, dy, r, color)
+
+	def realINIT(self, x, y, dx, dy, r, color):
+		self.goto(x, y)
+		self.dx = dx
+		self.dy = dy
+		self.r = r
+
+		self.shapesize(r/10)
+		self.color(color)
+
 
 '''
 a = Ball(0, 0, 5, 5, 20, 'purple')
