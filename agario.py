@@ -26,10 +26,11 @@ NUMBER_OF_FOOD = 20
 
 my_color = (random.random(), random.random(), random.random())
 
-MY_BALL = Ball(0, 0, 0, 0, random.randint(MINIMUM_BALL_RADIUS, MAXIMUM_BALL_RADIUS - 20), my_color)
+MY_BALL = Ball(0, 0, 0, 0, random.randint(MINIMUM_BALL_RADIUS, MAXIMUM_BALL_RADIUS - 20), my_color, 0)
 
 BALLS = []
 FOOD = []
+FBALLS = []
 
 for i in range(NUMBER_OF_BALLS):
 	ballx = random.randint(-SCREEN_WIDTH + MAXIMUM_BALL_RADIUS, SCREEN_WIDTH - MAXIMUM_BALL_RADIUS)
@@ -42,7 +43,7 @@ for i in range(NUMBER_OF_BALLS):
 
 	color = (random.random(), random.random(), random.random())
 
-	newBall = Ball(ballx, bally, dx, dy, radius, color)
+	newBall = Ball(ballx, bally, dx, dy, radius, color, 0)
 
 	BALLS.append(newBall)
 
@@ -94,13 +95,13 @@ def check_collision():
 				new_color = (random.random(), random.random(), random.random())
 
 				if(ball_a_r < ball_b_r):
-					ball_a.kill(new_x, new_y, new_dx, new_dy, new_radius, new_color)
+					ball_a.kill(new_x, new_y, new_dx, new_dy, new_radius, new_color, 0)
 					ball_a.shapesize(new_radius/10)
 					ball_b.r += 1
 					ball_b.shapesize(ball_b.r/10)
 
-				elif (ball_a_r > ball_b_r):
-					ball_b.kill(new_x, new_y, new_dx, new_dy, new_radius, new_color)
+				elif(ball_a_r > ball_b_r):
+					ball_b.kill(new_x, new_y, new_dx, new_dy, new_radius, new_color, 0)
 					ball_a.r += 1
 					ball_a.shapesize(ball_b.r/10)
 
@@ -112,7 +113,7 @@ def  check_food_collision():
 				new_y = random.randint(-SCREEN_HEIGHT + MAXIMUM_BALL_RADIUS, SCREEN_HEIGHT - MAXIMUM_BALL_RADIUS)
 				new_color = (random.random(), random.random(), random.random())
 
-				food.eat(new_x, new_y, color, 4)
+				food.eat(new_x, new_y, new_color, 4)
 				ball.r += 1
 				ball.shapesize(ball.r/10)
 
@@ -134,7 +135,7 @@ def check_myball_collision():
 			new_radius = random.randint(MINIMUM_BALL_RADIUS, MAXIMUM_BALL_RADIUS)
 			new_color = (random.random(), random.random(), random.random())
 
-			ball.kill(new_x, new_y, new_dx, new_dy, new_radius, new_color)
+			ball.kill(new_x, new_y, new_dx, new_dy, new_radius, new_color, 0)
 			ball.shapesize(new_radius/10)
 			MY_BALL.r += 1
 			MY_BALL.shapesize(MY_BALL.r/10)
@@ -158,22 +159,72 @@ def movearound(event):
 	y = SCREEN_HEIGHT - event.y
 
 	MY_BALL.goto(x, y)
+def AI(cur_ball):
+	if(cur_ball.AI == 1):
+		return False
+	for dif_ball in BALLS:
+		if(dif_ball.r > cur_ball.r):
+			if check_near(cur_ball, dif_ball):
+				cur_ball.changeDir(dif_ball.dx + 1, dif_ball.dy + 5)
+				cur_ball.AI = 1
+				return False
+
+	for dif_ball in BALLS:
+		if(dif_ball.r > cur_ball.r):
+			if check_near(cur_ball, dif_ball):
+				return False
+	cur_ball.AI = 0
+	return False
+def check_near(ball_a, ball_b):
+	D = math.sqrt(pow(ball_b.xcor() - ball_a.xcor(), 2) + pow(ball_b.ycor() - ball_a.ycor(), 2))
+	if(D < 200):
+		return True
+	return False
+
+'''
+def threat():
+	for ball_a in BALLS:
+		for ball_b in BALLS:
+			if ball_a != ball_b:
+				if(ball_a.r < ball_b.r):
+					if(SCREEN_HEIGHT > 100 or -SCREEN_HEIGHT < 100 or SCREEN_WIDTH > 100 or -SCREEN_WIDTH < 100):
+						D = math.sqrt(pow(ball_b.xcor() - ball_a.xcor(), 2) + pow(ball_b.ycor() - ball_a.ycor(), 2))
+						if(D < 200):
+							ball_a.changeDir(ball_b.dx + 1, ball_b.dy + 1)
+
+	for ball_a in BALLS:
+		for ball_b in BALLS:
+			if ball_a != ball_b:
+				if(ball_a.r < ball_b.r):
+					D = math.sqrt(pow(ball_b.xcor() - ball_a.xcor(), 2) + pow(ball_b.ycor() - ball_a.ycor(), 2))
+					if(D > 200):
+						new_dx = random.randint(MINIMUM_BALL_DX, MAXIMUM_BALL_DX)
+						new_dy = random.randint(MINIMUM_BALL_DY, MAXIMUM_BALL_DY)
+						ball_a.changeDir(new_dx, new_dy)
+'''
 
 turtle.getcanvas().bind("<Motion>", movearound)
 turtle.listen()
 
-def run_game():
-	while RUNNING:
-		if(SCREEN_WIDTH == turtle.getcanvas().winfo_width()/2 or SCREEN_HEIGHT == turtle.getcanvas().winfo_height()/2):
-			SCREEN_WIDTH = turtle.getcanvas().winfo_width()/2
-			SCREEN_HEIGHT = turtle.getcanvas().winfo_height()/2
 
-			move_all_balls()
-			check_collision()
-			check_food_collision()
-			check_myball_food()
-			RUNNING = check_myball_collision()
-			turtle.update()
-			time.sleep(SLEEP)
+while RUNNING:
+	if(SCREEN_WIDTH == turtle.getcanvas().winfo_width()/2 or SCREEN_HEIGHT == turtle.getcanvas().winfo_height()/2):
+		SCREEN_WIDTH = turtle.getcanvas().winfo_width()/2
+		SCREEN_HEIGHT = turtle.getcanvas().winfo_height()/2
+		move_all_balls()
+		check_collision()
+		check_food_collision()
+		check_myball_food()
+		RUNNING = check_myball_collision()
+		for ball in BALLS:
+			AI(ball)
+		turtle.update()
+		time.sleep(SLEEP)
+
+text = turtle.Turtle()
+text.penup()
+text.goto(-50, 0)
+text.write("GAME OVER!", font=("Ariel", 20, "normal"))
+
 
 turtle.mainloop()
